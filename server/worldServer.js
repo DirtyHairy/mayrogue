@@ -50,11 +50,27 @@ var WorldServer = Util.extend(WorldBase, {
     _onEntityMove: function(oldBoundingBox, newBoundingBox) {
         var me = this;
 
+        _parent._onEntityMove.apply(me, arguments);
+
         // ._x ._y ._width ._height
         me._setGridBoundingBoxValue(oldBoundingBox, 0);
         me._setGridBoundingBoxValue(newBoundingBox, -1);
+    },
 
-        _parent._onEntityMove.apply(me, arguments);
+    _onEntityAdded: function(entity) {
+        var me = this;
+
+        _parent._onEntityAdded.apply(me, arguments);
+
+        me._setGridBoundingBoxValue(entity.getBoundingBox(), -1);
+    },
+
+    _onEntityRemoved: function(entity) {
+        var me = this;
+
+        me._setGridBoundingBoxValue(entity.getBoundingBox(), 0);
+
+        _parent._onEntityRemoved.apply(me, arguments);
     },
 
     _onEntityAction: function(action, entity) {
