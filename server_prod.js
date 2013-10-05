@@ -1,4 +1,4 @@
 var server = require('./server/server');
 
-server.configure();
+server.configure('production');
 server.run(__dirname);
