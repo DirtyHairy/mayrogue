@@ -8,11 +8,13 @@ define(['underscore', 'util/class'],
          */
         var Observable = Class.define({
             _listeners: null,
+            _relays: null,
 
             create: function () {
                 var me = this;
 
                 me._listeners = {};
+                me._relays = [];
             },
 
             /**
@@ -29,6 +31,15 @@ define(['underscore', 'util/class'],
                         callback: handler,
                         scope: scope
                     });
+                });
+            },
+
+            attachRelay: function(handler, scope) {
+                var me = this;
+                
+                me._relays.push({
+                    handler: handler,
+                    scope: scope
                 });
             },
 
@@ -51,6 +62,14 @@ define(['underscore', 'util/class'],
                 });
             },
 
+            detachRelay: function(handler, scope) {
+                var me = this;
+                
+                me._relays = _.reject(me._relays, function(relay) {
+                    return handler === relay.handler && scope === relay.scope;
+                });
+            },
+
             /**
              * Detach all handlers registered with a given scope.
              */
@@ -66,19 +85,59 @@ define(['underscore', 'util/class'],
                 });
             },
 
+            detachAllRelays: function(scope) {
+                var me = this;
+                
+                me._relays = _.reject(me._relays, function(relay) {
+                    return scope === relay.scope;
+                });
+            },
+            
+            detachAll: function(scope) {
+                var me = this;
+                
+                me.detachAllListeners(scope);
+                me.detachAllRelays(scope);
+            },
+
             /**
              * Trigger an event. First argument is the event name, all other
              * arguments are directly passed to the handler. The sender is available as last argument.
              */
             fireEvent: function () {
                 var me = this;
-                var args = _.values(arguments);
+                
+                me._handleListeners.apply(me, arguments);
+                me._handleRelays.apply(me, arguments);
+            },
+            
+            _handleListeners: function(evt) {
+                var me = this;
+                
+                if (!me._listeners[evt]) {
+                    return;
+                }
+                
+                var args = Array.prototype.slice.call(arguments, 1);
                 args.push(me);
-                var evt = args.shift();
-
-                if (!me._listeners[evt]) return;
-                _.each(me._listeners[evt], function (handler) {
-                    handler.callback.apply(handler.scope, args);
+                
+                _.each(me._listeners[evt], function(listener) {
+                    listener.callback.apply(listener.scope, args);
+                });
+            },
+            
+            _handleRelays: function(evt) {
+                var me = this;
+                
+                if (me._relays.length === 0) {
+                    return;
+                }
+                
+                var args = Array.prototype.slice.call(arguments);
+                args.push(me);
+                
+                _.each(me._relays, function(relay) {
+                    relay.handler.apply(relay.scope, args);
                 });
             },
 
