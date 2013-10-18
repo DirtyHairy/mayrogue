@@ -53,6 +53,7 @@ define(['underscore', 'util/class'],
                 me._value.unshift(true);
                 me._resolved = true;
                 _.each(me._stack, me._invoke, me);
+                me.stack = null;
             },
 
             /**
@@ -65,6 +66,7 @@ define(['underscore', 'util/class'],
                 me._value = [false];
                 me._resolved = true;
                 _.each(me._stack, me._invoke, me);
+                me.stack = [];
 
             },
 
