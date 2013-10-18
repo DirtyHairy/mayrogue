@@ -20,6 +20,8 @@ describe('The observable class / mixin', function() {
                     event1: me._onEvent1,
                     event2: me._onEvent2
                 }, me);
+                
+                observable.attachRelay(me._relay, me);
             },
             
             detach: function(observable) {
@@ -36,7 +38,9 @@ describe('The observable class / mixin', function() {
             
             _onEvent2: function() {
                 this.setFlag(true);
-            }
+            },
+            
+            _relay: function() {}
         }),
         observer,
         observable;
@@ -47,6 +51,7 @@ describe('The observable class / mixin', function() {
         
         spyOn(observer, '_onEvent1').andCallThrough();
         spyOn(observer, '_onEvent2').andCallThrough();
+        spyOn(observer, '_relay').andCallThrough();
         
         observer.attach(observable);
     });
@@ -115,5 +120,43 @@ describe('The observable class / mixin', function() {
         
         expect(observer._onEvent1).not.toHaveBeenCalled();
         expect(observer._onEvent2.calls.length).toEqual(2);
+    });
+    
+    it('all events will be forwarded to a relay registered with attachRelay', function() {
+        observable.fireEvent('event1', 1);
+        observable.fireEvent('event2', 2);
+        
+        expect(observer._relay.calls.length).toBe(2);
+        expect(observer._relay.calls[0].args).toEqual(['event1', 1, observable]);
+        expect(observer._relay.calls[1].args).toEqual(['event2', 2, observable]);
+    });
+    
+    it('relays can be detached individually', function() {
+        observer.attach(observable);
+        observable.detachRelay(observer._relay, observer);
+        
+        observable.fireEvent('event1');
+        
+        expect(observer._relay).not.toHaveBeenCalled();
+        expect(observer._onEvent1).toHaveBeenCalled();
+    });
+    
+    it('relays can be detached by scope', function() {
+        observer.attach(observable);
+        observable.detachAllRelays(observer);
+        
+        observable.fireEvent('event1');
+        
+        expect(observer._relay).not.toHaveBeenCalled();
+        expect(observer._onEvent1).toHaveBeenCalled();
+    });
+    
+    it('relays and observers can be detached simultaneously by scope', function() {
+        observer.attach(observable);
+        observable.detachAll(observer);
+        
+        expect(observer._relay).not.toHaveBeenCalled();
+        expect(observer._onEvent1).not.toHaveBeenCalled();
+        expect(observer._onEvent2).not.toHaveBeenCalled();
     });
 });
