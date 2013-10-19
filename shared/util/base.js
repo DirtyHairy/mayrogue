@@ -14,17 +14,19 @@ define(['underscore', 'util/class', 'util/support'],
             getConfig: function (config, properties) {
                 var me = this;
 
-                _.each(properties, function (property) {
-                    if (config[property] !== undefined) {
-                        var setter = me['set' + Support.ucFirst(property)];
-
-                        if (_.isFunction(setter)) {
-                            setter.call(me, config[property]);
-                        } else {
-                            me['_' + property] = config[property];
+                if (config) {
+                    _.each(properties, function (property) {
+                        if (config[property] !== undefined) {
+                            var setter = me['set' + Support.ucFirst(property)];
+    
+                            if (_.isFunction(setter)) {
+                                setter.call(me, config[property]);
+                            } else {
+                                me['_' + property] = config[property];
+                            }
                         }
-                    }
-                });
+                    });
+                }
 
                 return me;
             },
