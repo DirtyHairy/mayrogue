@@ -21,9 +21,18 @@ define(['underscore', 'util'],
             var me = this;
             
             _parent.create.apply(me, arguments);
+            Util.Observable.prototype.create.apply(me, arguments);
             
             me.getConfig(config, ['relayEvents']);
-            Util.Observable.prototype.create.apply(me, arguments);
+            
+            if (_.isArray(me._relayEvents)) {
+                var compiled = {};
+                _.each(me._relayEvents, function(event) {
+                    compiled[event] = true;
+                });
+                
+                me._relayEvents = compiled;
+            }
         },
         
         destroy: function() {
@@ -46,7 +55,7 @@ define(['underscore', 'util'],
         remove: function(item) {
             var me = this;
             
-            if (item.detachRelay && me.getRelayEvents()) {
+            if (item && me.getRelayEvents() && item.detachRelay) {
                 item.detachRelay(me._relay, me);
             }
             
@@ -59,7 +68,7 @@ define(['underscore', 'util'],
         
         count: function() {},
         
-        filter: function(predicate) {
+        findAll: function(predicate) {
             var me = this,
                 result = [];
                 
@@ -72,12 +81,12 @@ define(['underscore', 'util'],
             return result;
         },
         
-        find: function(predicate) {
+        findOne: function(predicate) {
             var me = this,
                 found = false,
                 result;
                 
-            me._some(function(item) {
+            me.some(function(item) {
                 if (predicate(item)) {
                     result = predicate;
                     found = true;
@@ -87,6 +96,19 @@ define(['underscore', 'util'],
             });
             
             return found ? result : undefined;
+        },
+        
+        getAll: function() {
+            return this.findAll(function() {return true;});
+        },
+        
+        contains: function(item) {
+            var me = this,
+                found = me.findOne(function(candidate) {
+                    return item === candidate;
+                });
+            
+            return !!found;
         },
         
         _relay: function(event) {

@@ -24,6 +24,7 @@ define(['underscore', 'util', 'collection/abstract'],
                 _.each(arguments, function(arg) {
                     me.add(arg)
                 });
+                return;
             }
             
             if (!_.contains(me._registry, item)) {
@@ -34,8 +35,16 @@ define(['underscore', 'util', 'collection/abstract'],
         },
         
         remove: function(item) {
-            var me = this,
-                index = _.indexOf(me._registry, item);
+            var me = this;
+            
+            if (arguments.length > 1) {
+                _.each(arguments, function(arg) {
+                    me.remove(arg);
+                });
+                return;
+            }
+                
+            var index = _.indexOf(me._registry, item);
             
             if (index >= 0) {
                 me._registry.splice(index, 1);
@@ -54,6 +63,10 @@ define(['underscore', 'util', 'collection/abstract'],
         
         count: function() {
             return this._registry.length;
+        },
+        
+        getAll: function() {
+            return this._map.slice();
         }
     });
     

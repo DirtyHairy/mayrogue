@@ -3,7 +3,7 @@ define(['underscore', 'util', 'collection/abstract'],
 {
     'use strict';
     
-    var _parent = AbstractCollection.prototye;
+    var _parent = AbstractCollection.prototype;
     
     var KeyValueCollection = Util.extend(AbstractCollection, {
         
@@ -23,6 +23,7 @@ define(['underscore', 'util', 'collection/abstract'],
             
             if (arguments.length === 1) {
                 _.each(item, me.add, me);
+                return;
             }
             
             if (!me._map.hasOwnProperty(key)) {
@@ -36,18 +37,21 @@ define(['underscore', 'util', 'collection/abstract'],
         removeAt: function(key) {
             var me = this;
             
+            if (arguments.length > 1) {
+                _.each(arguments, function(arg) {
+                    me.removeAt(arg);
+                });
+                return;
+            }
+            
             if (me._map.hasOwnProperty(key)) {
                 var item = me._map[key];
                 
                 delete me._map[key];
-                me.size--;
+                me._size--;
                 
                 _parent.remove.call(me, item);
-                
-                return key;
             }
-            
-            return undefined;
         },
         
         each: function(iterator) {
@@ -76,8 +80,16 @@ define(['underscore', 'util', 'collection/abstract'],
         },
         
         remove: function(item) {
-            var me = this,
-                key = me.findKey(item);
+            var me = this;
+            
+            if (arguments.length > 1) {
+                _.each(arguments, function(arg) {
+                    me.remove(arg);
+                });
+                return;
+            }
+            
+            var key = me.findKey(item);
             
             if (typeof(key) !== 'undefined') {
                 me.removeAt(key);
@@ -86,6 +98,10 @@ define(['underscore', 'util', 'collection/abstract'],
         
         getAt: function(key) {
             return this._map[key];
+        },
+        
+        count: function() {
+            return this._size;
         }
     });
     
