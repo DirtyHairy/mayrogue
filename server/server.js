@@ -89,7 +89,7 @@ var Server = Util.extend(Util.Base, {
         // Statically serve all other required directories
         me._app.use('/frontend/', express.static(root + '/frontend/'));
         me._app.use('/shared/', express.static(root + '/shared/'));
-        me._app.use('/components/', express.static(root + '/components/'));
+        me._app.use('/bower_components/', express.static(root + '/bower_components/'));
     },
     
     _serve: function() {

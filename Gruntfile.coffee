@@ -26,7 +26,7 @@ exports = module.exports = (grunt) ->
                         'socket.io': 'empty:'
 
     grunt.loadNpmTasks "grunt-contrib-jshint"
-    grunt.loadNpmTasks "grunt-contrib-requirejs"
+    grunt.loadNpmTasks "grunt-requirejs"
 
     grunt.registerTask "default", ["jshint"]
     grunt.registerTask 'build', ['requirejs']

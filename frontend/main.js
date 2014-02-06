@@ -12,8 +12,8 @@ require.config({
         'application': '../frontend/application',
         'tilesets/oryx': '../frontend/tilesets/oryx',
         // Bootstrap
-        'bootstrap': '../components/bootstrap-assets/js/bootstrap.min',
-        'jquery': '../components/jquery/jquery.min'
+        'bootstrap': '../bower_components/bootstrap-assets/js/bootstrap.min',
+        'jquery': '../bower_components/jquery/jquery.min'
     },
     shim: {
         'underscore': {
