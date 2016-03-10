@@ -2,6 +2,6 @@
   "name": "mayrogue",
   "version": "0.0.1",
   "dependencies": {
-    "bootstrap-assets": "~2.3.1"
+    "html-bootstrap-assets": "~2.3.2"
   }
 }

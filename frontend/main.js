@@ -12,7 +12,7 @@ require.config({
         'application': '../frontend/application',
         'tilesets/oryx': '../frontend/tilesets/oryx',
         // Bootstrap
-        'bootstrap': '../bower_components/bootstrap-assets/js/bootstrap.min',
+        'bootstrap': '../bower_components/html-bootstrap-assets/js/bootstrap.min',
         'jquery': '../bower_components/jquery/jquery.min'
     },
     shim: {
